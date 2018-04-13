@@ -2,7 +2,7 @@ package app.busalert.network;
 
 import org.json.JSONObject;
 
-import app.busalert.model.UnavaliableDataException;
+import app.busalert.model.DataUnavailableException;
 import app.busalert.model.VehicleType;
 
 public class WarsawData {
@@ -19,14 +19,14 @@ public class WarsawData {
     // Formatted files with data for each consecutive day
     public static final String FTP_URL = "ftp;//rozklady.ztm.waw.pl";
 
-    public JSONObject getLiveData(VehicleType vehicle) throws UnavaliableDataException {
+    public JSONObject getLiveData(VehicleType vehicle) throws DataUnavailableException {
         switch (vehicle) {
             case BUS:
 
             case TRAM:
 
             default:
-                throw new UnavaliableDataException();
+                throw new DataUnavailableException();
         }
     }
 }
