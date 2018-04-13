@@ -1,4 +1,4 @@
-package app.busalert.model;
+package app.busalert.network;
 
 public class DataUnavailableException extends Exception {
 }

@@ -2,7 +2,6 @@ package app.busalert.network;
 
 import org.json.JSONObject;
 
-import app.busalert.model.DataUnavailableException;
 import app.busalert.model.VehicleType;
 
 public class WarsawData {
