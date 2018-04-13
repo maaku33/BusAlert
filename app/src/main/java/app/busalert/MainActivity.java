@@ -1,6 +1,8 @@
 package app.busalert;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -8,6 +10,20 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Text;
+
+import java.util.List;
+
+import app.busalert.db.AppDatabase;
+import app.busalert.db.entities.VehicleEntity;
+import app.busalert.model.VehicleType;
+import app.busalert.network.DataUnavailableException;
+import app.busalert.network.WarsawData;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mAlertList = (LinearLayout) findViewById(R.id.alert_list);
+
+        try {
+            WarsawData.updateData(VehicleType.BUS, this.getApplicationContext(), getDatabase());
+        } catch (DataUnavailableException e) {
+            e.printStackTrace(); // shouldn't happen for buses
+        }
     }
 
     @Override
@@ -66,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private AppDatabase getDatabase() {
+        return AppDatabase.getInstance(this.getApplicationContext());
     }
 
     private void startAlertCreationActivity() {

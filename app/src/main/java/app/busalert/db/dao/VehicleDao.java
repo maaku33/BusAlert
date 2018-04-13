@@ -19,10 +19,13 @@ public interface VehicleDao {
     @Delete
     public void deleteAll(List<VehicleEntity> vehicles);
 
+    @Query("DELETE FROM vehicles")
+    public void purgeAll();
+
     @Query("SELECT * FROM vehicles " +
             "WHERE latitude BETWEEN :latmin AND :latmax " +
             "AND longitude BETWEEN :lonmin AND :lonmax")
-    public List<VehicleEntity> loadAllBetween(long latmin, long latmax, long lonmin, long lonmax);
+    public List<VehicleEntity> loadAllBetween(double latmin, double latmax, double lonmin, double lonmax);
 
     @Query("SELECT * FROM vehicles")
     public List<VehicleEntity> loadAll();

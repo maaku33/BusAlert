@@ -8,7 +8,7 @@ import android.content.Context;
 import app.busalert.db.dao.VehicleDao;
 import app.busalert.db.entities.VehicleEntity;
 
-@Database(entities = {VehicleEntity.class}, version = 2)
+@Database(entities = {VehicleEntity.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase sInstance;
@@ -20,7 +20,9 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (sInstance == null) {
                     sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                            AppDatabase.class, "vehicle.db").build();
+                            AppDatabase.class, "vehicle.db")
+                            .fallbackToDestructiveMigration() // TODO: manage better migrations
+                            .build();
                 }
             }
         }

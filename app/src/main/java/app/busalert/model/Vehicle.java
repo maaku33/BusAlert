@@ -4,6 +4,6 @@ public interface Vehicle {
 
     String getLine();
     String getBrigade();
-    long getLatitude();
-    long getLongitude();
+    double getLatitude();
+    double getLongitude();
 }

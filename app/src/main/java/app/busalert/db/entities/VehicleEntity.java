@@ -17,11 +17,11 @@ public class VehicleEntity implements Vehicle {
     private String brigade;
 
     private String timestamp;
-    private long latitude;
-    private long longitude;
+    private double latitude;
+    private double longitude;
 
-    public VehicleEntity(@NonNull String line, String brigade, String timestamp, long latitude,
-                         long longitude) {
+    public VehicleEntity(@NonNull String line, String brigade, String timestamp, double latitude,
+                         double longitude) {
         this.line = line;
         this.brigade = brigade;
         this.timestamp = timestamp;
@@ -48,21 +48,25 @@ public class VehicleEntity implements Vehicle {
         this.brigade = brigade;
     }
 
+    public String getTimestamp() {
+        return timestamp;
+    }
+
     @Override
-    public long getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(long latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
     @Override
-    public long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(long longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 }

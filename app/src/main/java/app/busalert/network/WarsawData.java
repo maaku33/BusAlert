@@ -1,6 +1,8 @@
 package app.busalert.network;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,7 +37,7 @@ public class WarsawData {
     private static final String FTP_URL = "ftp;//rozklady.ztm.waw.pl";
 
 
-    public void updateData(VehicleType vehicle, Context context, final AppDatabase database)
+    public static void updateData(VehicleType vehicle, final Context context, final AppDatabase database)
             throws DataUnavailableException {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = "";
@@ -56,12 +58,20 @@ public class WarsawData {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            database.vehicleDao().insertAll(jsonToList(response));
-                        } catch (DataCorruptedException e) {
-                            // TODO: inform user about server error
-                        }
+                    public void onResponse(final JSONObject response) {
+                        new AsyncTask<Void, Void, Void>() {
+
+                            @Override
+                            protected Void doInBackground(Void... params) {
+                                try {
+                                    database.vehicleDao().purgeAll();
+                                    database.vehicleDao().insertAll(jsonToList(response));
+                                } catch (DataCorruptedException e) {
+                                    // TODO: inform user about server error
+                                }
+                                return null;
+                            }
+                        }.execute();
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -85,8 +95,8 @@ public class WarsawData {
                 list.add(new VehicleEntity(jo.getString("Lines"),
                         jo.getString("Brigade"),
                         jo.getString("Time"),
-                        jo.getLong("Lat"),
-                        jo.getLong("Lon")));
+                        jo.getDouble("Lat"),
+                        jo.getDouble("Lon"))); // TODO: move strings to variables
             }
         } catch (JSONException e) {
             throw new DataCorruptedException();

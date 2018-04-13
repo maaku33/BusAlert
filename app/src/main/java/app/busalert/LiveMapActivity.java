@@ -3,16 +3,23 @@ package app.busalert;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
+
+import app.busalert.db.AppDatabase;
+import app.busalert.db.entities.VehicleEntity;
 
 public class LiveMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -53,6 +60,26 @@ public class LiveMapActivity extends FragmentActivity implements OnMapReadyCallb
             center = new LatLng(WARSAW_LAT, WARSAW_LON);
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(center));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 13.5f));
+
+        final AppDatabase db = AppDatabase.getInstance(this.getApplicationContext());
+
+        new AsyncTask<Void, Void, List<VehicleEntity>>() {
+            @Override
+            protected List<VehicleEntity> doInBackground(Void... voids) {
+                return db.vehicleDao().loadAll();
+            }
+
+            @Override
+            protected void onPostExecute(List<VehicleEntity> vehicleList) {
+                for (int i = 0; i < vehicleList.size() && i < 100; i++) {
+                    VehicleEntity ve = vehicleList.get(i);
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(ve.getLatitude(), ve.getLongitude()))
+                            .title(ve.getLine()));
+                }
+            }
+        }.execute();
+
     }
 }
