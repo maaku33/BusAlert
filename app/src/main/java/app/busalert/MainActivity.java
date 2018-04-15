@@ -13,6 +13,7 @@ import app.busalert.db.AppDatabase;
 import app.busalert.model.VehicleType;
 import app.busalert.network.DataUnavailableException;
 import app.busalert.network.WarsawData;
+import app.busalert.sync.UpdateLiveVehiclesHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mAlertList = (LinearLayout) findViewById(R.id.alert_list);
+
+        UpdateLiveVehiclesHelper.startService(this, 5000);
     }
 
     @Override

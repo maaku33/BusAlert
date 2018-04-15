@@ -62,24 +62,31 @@ public class LiveMapActivity extends FragmentActivity implements OnMapReadyCallb
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 13.5f));
 
-        final AppDatabase db = AppDatabase.getInstance(this.getApplicationContext());
+        new DrawTask(AppDatabase.getInstance(this.getApplicationContext()), mMap).execute();
+    }
 
-        new AsyncTask<Void, Void, List<VehicleEntity>>() {
-            @Override
-            protected List<VehicleEntity> doInBackground(Void... voids) {
-                return db.vehicleDao().loadAll();
+    private static class DrawTask extends AsyncTask<Void, Void, List<VehicleEntity>> {
+        private final AppDatabase mDatabase;
+        private final GoogleMap mMap;
+
+        DrawTask(AppDatabase database, GoogleMap map) {
+            mDatabase = database;
+            mMap = map;
+        }
+
+        @Override
+        protected List<VehicleEntity> doInBackground(Void... voids) {
+            return mDatabase.vehicleDao().loadAll();
+        }
+
+        @Override
+        protected void onPostExecute(List<VehicleEntity> vehicleList) {
+            for (int i = 0; i < vehicleList.size() && i < 100; i++) {
+                VehicleEntity ve = vehicleList.get(i);
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(ve.getLatitude(), ve.getLongitude()))
+                        .title(ve.getLine()));
             }
-
-            @Override
-            protected void onPostExecute(List<VehicleEntity> vehicleList) {
-                for (int i = 0; i < vehicleList.size() && i < 100; i++) {
-                    VehicleEntity ve = vehicleList.get(i);
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(ve.getLatitude(), ve.getLongitude()))
-                            .title(ve.getLine()));
-                }
-            }
-        }.execute();
-
+        }
     }
 }
