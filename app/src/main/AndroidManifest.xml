@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.busalert">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -12,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -23,6 +25,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".sync.UpdateLiveVehiclesJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true" />
+
         <activity
             android:name=".AlertCreationActivity"
             android:label="@string/title_activity_alert_creation"
@@ -31,6 +39,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.busalert.MainActivity" />
         </activity>
+
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -39,6 +48,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.busalert.MainActivity" />
         </activity>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

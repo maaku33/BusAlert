@@ -9,6 +9,7 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 import app.busalert.db.entities.VehicleEntity;
+import app.busalert.model.VehicleType;
 
 @Dao
 public interface VehicleDao {
@@ -22,10 +23,14 @@ public interface VehicleDao {
     @Query("DELETE FROM vehicles")
     public void purgeAll();
 
+    @Query("DELETE FROM vehicles WHERE type = :type")
+    public void deleteType(VehicleType type);
+
     @Query("SELECT * FROM vehicles " +
             "WHERE latitude BETWEEN :latmin AND :latmax " +
             "AND longitude BETWEEN :lonmin AND :lonmax")
-    public List<VehicleEntity> loadAllBetween(double latmin, double latmax, double lonmin, double lonmax);
+    public List<VehicleEntity> loadAllBetween(double latmin, double latmax,
+                                              double lonmin, double lonmax);
 
     @Query("SELECT * FROM vehicles")
     public List<VehicleEntity> loadAll();
