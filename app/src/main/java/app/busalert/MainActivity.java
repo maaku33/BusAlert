@@ -1,21 +1,27 @@
 package app.busalert;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import app.busalert.db.AppDatabase;
-import app.busalert.model.VehicleType;
-import app.busalert.network.DataUnavailableException;
-import app.busalert.network.WarsawData;
 import app.busalert.sync.UpdateLiveVehiclesHelper;
+import app.busalert.sync.UpdateLiveVehiclesIntentService;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final long ALARM_REP_TIME_SEC = 10L;
 
     private LinearLayout mAlertList;
 
@@ -35,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
         mAlertList = (LinearLayout) findViewById(R.id.alert_list);
 
-        UpdateLiveVehiclesHelper.startService(this, 5000);
+        setupAlarmManager();
+//        UpdateLiveVehiclesHelper.startService(this, 5000);
     }
 
     @Override
@@ -74,6 +81,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setupAlarmManager() {
+        Context context = getApplicationContext();
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, UpdateLiveVehiclesIntentService.class);
+        PendingIntent alarmIntent = PendingIntent.getService(context, 0, intent, 0);
+
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + ALARM_REP_TIME_SEC * 1000,
+                ALARM_REP_TIME_SEC * 1000,
+                alarmIntent);
+        Log.i(TAG, "Finished setting up Alarm Manager");
     }
 
     private AppDatabase getDatabase() {
