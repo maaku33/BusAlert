@@ -12,4 +12,17 @@ public enum VehicleType {
     public int getValue() {
         return value;
     }
+
+    public static VehicleType fromInt(int value) {
+        switch (value) {
+            case 0:
+                return BUS;
+            case 1:
+                return TRAM;
+            case 2:
+                return METRO;
+            default:
+                return UNKNOWN;
+        }
+    }
 }

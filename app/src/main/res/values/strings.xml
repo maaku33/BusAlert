@@ -1,19 +1,27 @@
 <resources>
     <string name="app_name" translatable="false">Bus Alert</string>
+    <string name="title_activity_alert_creation">Create Alert</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Toolbar -->
     <string name="action_settings">Settings</string>
     <string name="action_live_map">Map</string>
-    <string name="title_activity_alert_creation">Create Alert</string>
 
-    <!-- Buttons !-->
+    <!-- Buttons -->
     <string name="navigation_home">Home</string>
     <string name="navigation_save">Save</string>
 
-    <!-- Messages !-->
-    <string name="invalid_parameters">Invalid Parameters</string>
+    <!-- Icons -->
+    <string name="icon_vehicle_type_alert_box">Vehicle</string>
+    <string name="icon_delete">Delete</string>
 
-    <!-- Fields !-->
-    <string name="field_activity_name">Name</string>
-    <string name="title_activity_settings">Settings</string>
+    <!-- Messages -->
+    <string name="message_invalid_parameters">Invalid Parameters</string>
+
+    <!-- Fields -->
+    <string name="field_alert_name">Alert Name</string>
+    <string name="field_alert_line">Bus/Tram Line</string>
+    <string name="field_alert_location">Choose the center and the radius (0 to 2000 meters) of the alert.</string>
 
     <!-- Strings related to Settings -->
 

@@ -4,24 +4,35 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
+
 import app.busalert.db.AppDatabase;
-import app.busalert.sync.UpdateLiveVehiclesHelper;
+import app.busalert.db.dao.AlertDao;
+import app.busalert.db.entities.AlertEntity;
+import app.busalert.model.VehicleType;
 import app.busalert.sync.UpdateLiveVehiclesIntentService;
+import app.busalert.views.AlertBox;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final long ALARM_REP_TIME_SEC = 10L;
+
+    private static final long ALARM_INTERVAL_SHORT_MILIS = 15L * 1000L;
+    private static final long ALARM_INTERVAL_LONG_MILIS = 90L * 1000L;
+
+    private AlarmManager alarmManager;
+    private PendingIntent updateAlarmIntent;
 
     private LinearLayout mAlertList;
 
@@ -29,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
@@ -39,22 +51,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mAlertList = (LinearLayout) findViewById(R.id.alert_list);
+        mAlertList = findViewById(R.id.alert_list);
+        updateAlertBoxes();
 
         setupAlarmManager();
-//        UpdateLiveVehiclesHelper.startService(this, 5000);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        drawAlerts();
+        updateAlertBoxes();
     }
 
     @Override
     public void onRestart() {
         super.onRestart();
-        drawAlerts();
+        updateAlertBoxes();
+    }
+
+    @Override
+    public void onDestroy() {
+        alarmManager.cancel(updateAlarmIntent);
+        super.onDestroy();
+    }
+
+    private void updateAlertBoxes() {
+        new UpdateAlertBoxesTask(getDatabase(), mAlertList, this).execute();
     }
 
     @Override
@@ -67,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button,
-        // utilizing parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
                 startSettingsActivity();
@@ -85,15 +104,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupAlarmManager() {
         Context context = getApplicationContext();
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, UpdateLiveVehiclesIntentService.class);
-        PendingIntent alarmIntent = PendingIntent.getService(context, 0, intent, 0);
+        updateAlarmIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + ALARM_REP_TIME_SEC * 1000,
-                ALARM_REP_TIME_SEC * 1000,
-                alarmIntent);
-        Log.i(TAG, "Finished setting up Alarm Manager");
+                SystemClock.elapsedRealtime() + 4 * 1000,
+                ALARM_INTERVAL_SHORT_MILIS,
+                updateAlarmIntent);
+    }
+
+    public void deleteAlert(View view) {
+        final AlertBox alertBox = (AlertBox) view.getParent().getParent();
+
+        new Thread() {
+            @Override
+            public void run() {
+                getDatabase().alertDao().delete(alertBox.getAlertId());
+                updateAlertBoxes();
+            }
+        }.start();
     }
 
     private AppDatabase getDatabase() {
@@ -112,7 +142,38 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this.getApplicationContext(), LiveMapActivity.class));
     }
 
-    private void drawAlerts() {
+    private static class UpdateAlertBoxesTask extends AsyncTask<Void, Void, List<AlertEntity>> {
 
+        private AlertDao dao;
+        private WeakReference<LinearLayout> alertListRef;
+        private WeakReference<Context> contextRef;
+
+        UpdateAlertBoxesTask(AppDatabase database, LinearLayout alertList, Context context) {
+            this.dao = database.alertDao();
+            this.alertListRef = new WeakReference<>(alertList);
+            this.contextRef = new WeakReference<>(context);
+        }
+
+        @Override
+        protected List<AlertEntity> doInBackground(Void... voids) {
+            return dao.loadAll();
+        }
+
+        @Override
+        protected void onPostExecute(List<AlertEntity> alerts) {
+            final LinearLayout alertList = alertListRef.get();
+            final Context context = contextRef.get();
+            if (alertList == null || context == null) return;
+
+            alertList.removeAllViews();
+            for (AlertEntity alert : alerts) {
+                AlertBox box = new AlertBox(context, null, alert.id, VehicleType.BUS,
+                        alert.getLine(), alert.getName(), alert.getIntervalStart(),
+                        alert.getIntervalEnd());
+                alertList.addView(box);
+            }
+
+            alertList.invalidate();
+        }
     }
 }

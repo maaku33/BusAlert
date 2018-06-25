@@ -9,29 +9,42 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 import app.busalert.db.entities.VehicleEntity;
+import app.busalert.model.Vehicle;
 import app.busalert.model.VehicleType;
 
 @Dao
 public interface VehicleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertAll(List<VehicleEntity> vehicles);
+    void insertAll(List<VehicleEntity> vehicles);
 
     @Delete
-    public void deleteAll(List<VehicleEntity> vehicles);
+    void deleteAll(List<VehicleEntity> vehicles);
 
     @Query("DELETE FROM vehicles")
-    public void purgeAll();
+    void purgeAll();
 
     @Query("DELETE FROM vehicles WHERE type = :type")
-    public void deleteType(VehicleType type);
+    void deleteType(VehicleType type);
 
     @Query("SELECT * FROM vehicles " +
             "WHERE latitude BETWEEN :latmin AND :latmax " +
             "AND longitude BETWEEN :lonmin AND :lonmax")
-    public List<VehicleEntity> loadAllBetween(double latmin, double latmax,
-                                              double lonmin, double lonmax);
+    List<VehicleEntity> loadAllBetween(double latmin, double latmax,
+                                       double lonmin, double lonmax);
+
+    @Query("SELECT * FROM vehicles WHERE line = :line " +
+            "AND latitude BETWEEN :latmin AND :latmax " +
+            "AND longitude BETWEEN :lonmin AND :lonmax")
+    List<VehicleEntity> loadLineBetween(String line, double latmin, double latmax,
+                                        double lonmin, double lonmax);
+
+    @Query("SELECT * FROM vehicles WHERE line = :line")
+    List<VehicleEntity> loadAllFromLine(String line);
+
+    @Query("SELECT DISTINCT line FROM vehicles")
+    List<String> loadAllLines();
 
     @Query("SELECT * FROM vehicles")
-    public List<VehicleEntity> loadAll();
+    List<VehicleEntity> loadAll();
 }
