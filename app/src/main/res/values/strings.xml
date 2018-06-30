@@ -10,6 +10,8 @@
     <!-- Buttons -->
     <string name="navigation_home">Home</string>
     <string name="navigation_save">Save</string>
+    <string name="button_starting_time">Set starting time</string>
+    <string name="button_ending_time">Set ending time</string>
 
     <!-- Icons -->
     <string name="icon_vehicle_type_alert_box">Vehicle</string>
@@ -21,7 +23,7 @@
     <!-- Fields -->
     <string name="field_alert_name">Alert Name</string>
     <string name="field_alert_line">Bus/Tram Line</string>
-    <string name="field_alert_location">Choose the center and the radius (0 to 2000 meters) of the alert.</string>
+    <string name="field_alert_location">Choose the center and the radius of the alert.</string>
 
     <!-- Strings related to Settings -->
 

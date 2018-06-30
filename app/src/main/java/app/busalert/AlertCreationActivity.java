@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import app.busalert.db.AppDatabase;
 import app.busalert.db.entities.AlertEntity;
@@ -30,8 +32,11 @@ import app.busalert.model.WeekdaySet;
 
 public class AlertCreationActivity extends MapFragmentActivity implements GoogleMap.OnMapClickListener {
 
+    private static final int SEEK_BAR_MAX = 2000;
+
     private EditText mName, mLine;
     private Button mStart, mEnd;
+    private TextView mSeekBarTextView;
     private SeekBar mSeekBar;
     private Marker mMarker;
     private Time start, end;
@@ -70,7 +75,26 @@ public class AlertCreationActivity extends MapFragmentActivity implements Google
         mStart = findViewById(R.id.new_alert_start_time);
         mEnd = findViewById(R.id.new_alert_end_time);
         mSeekBar = findViewById(R.id.new_alert_radius);
-        mSeekBar.setMax(2000);
+        mSeekBarTextView = findViewById(R.id.radius_text_view);
+
+        mSeekBarTextView.setText("0 m");
+        mSeekBar.setMax(SEEK_BAR_MAX);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                mSeekBarTextView.setText(String.format(Locale.getDefault(), "%1$d m", i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
