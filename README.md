@@ -7,7 +7,7 @@ Android app showing custom alerts based on live :bus: and :tram: data for Warsaw
 * View created alerts in a list or on a map
 * Display live bus and tram positions on a map
 
-![Alert list](busalert-alert-list.png)
+![Alert list](bualert-alert-list.png)
 ![Creating alert](busalert-create-alert.png)
 
 ### TODOs
