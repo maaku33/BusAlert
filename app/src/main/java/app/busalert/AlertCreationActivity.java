@@ -3,6 +3,7 @@ package app.busalert;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -18,6 +19,8 @@ import android.widget.TimePicker;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -39,6 +42,7 @@ public class AlertCreationActivity extends MapFragmentActivity implements Google
     private TextView mSeekBarTextView;
     private SeekBar mSeekBar;
     private Marker mMarker;
+    private Circle mCircle;
     private Time start, end;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -83,6 +87,16 @@ public class AlertCreationActivity extends MapFragmentActivity implements Google
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 mSeekBarTextView.setText(String.format(Locale.getDefault(), "%1$d m", i));
+
+                if (mCircle != null) {
+                    mCircle.remove();
+                }
+
+                CircleOptions circle = new CircleOptions();
+                circle.center(mMarker.getPosition());
+                circle.radius(i);
+                circle.strokeColor(Color.RED);
+                mCircle = mMap.addCircle(circle);
             }
 
             @Override
@@ -115,6 +129,10 @@ public class AlertCreationActivity extends MapFragmentActivity implements Google
     public void onMapClick(LatLng point) {
         mMarker.remove();
         mMarker = mMap.addMarker(new MarkerOptions().position(point));
+
+        if (mCircle != null) {
+            mCircle.setCenter(point);
+        }
     }
 
     /**
