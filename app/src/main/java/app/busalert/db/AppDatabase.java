@@ -17,7 +17,7 @@ import app.busalert.db.entities.LineEntity;
 import app.busalert.db.entities.VehicleEntity;
 
 @Database(entities = {VehicleEntity.class, AlertEntity.class, LineEntity.class},
-        version = 9, exportSchema = false)
+        version = 11, exportSchema = false)
 @TypeConverters({VehicleTypeConverter.class, WeekdaySetTypeConverter.class, TimeTypeConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 

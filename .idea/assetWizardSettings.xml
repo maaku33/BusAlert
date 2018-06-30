@@ -34,9 +34,10 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\Marek\Downloads\icons8-radio-tower-96.png" />
+                                      <entry key="imageAsset" value="C:\Users\Marek\Downloads\icons8-plus-math-96.png" />
+                                      <entry key="outputName" value="ic_plus" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="000000" />
+                                      <entry key="themeColor" value="ffffff" />
                                     </map>
                                   </option>
                                 </PersistentState>

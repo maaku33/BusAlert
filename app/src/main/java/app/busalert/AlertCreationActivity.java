@@ -45,6 +45,7 @@ public class AlertCreationActivity extends MapFragmentActivity implements Google
     private Circle mCircle;
     private Time start, end;
 
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
